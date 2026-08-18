@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Page Not Found — UniEvents{% endblock %}
+{% block content %}
+    <section class="page-shell error-page reveal">
+      <img src="{% static 'assets/unievents-full.png' %}" alt="UniEvents" style="height:220px; margin-bottom:14px;" />
+      <div class="error-page__code">404</div>
+      <h1 class="error-page__title">This page wandered off-campus.</h1>
+      <p class="error-page__desc">The link you followed doesn't match any page here. It may have moved, or the event you were looking for was pulled from the directory.</p>
+      <div class="error-page__actions">
+        <a href="/" class="btn btn--gold">Back to Events Directory</a>
+        <a href="/about/" class="btn btn--ghost">About UniEvents</a>
+      </div>
+    </section>
+{% endblock %}
+{% block extra_scripts %}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderHeader(null);
+      initScrollReveal();
+    });
+  </script>
+{% endblock %}

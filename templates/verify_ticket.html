@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Verify Ticket — UniEvents{% endblock %}
+{% block description %}Verifies the authenticity of event entry tickets. Shows registration and event details in real-time.{% endblock %}
+{% block content %}
+    <section class="page-shell" style="max-width: 600px; margin: 40px auto; padding: 0 16px;">
+        <div class="verify-card" style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r-lg); padding: var(--sp-6); box-shadow: var(--shadow-lg); text-align: center; position: relative; overflow: hidden; margin-top: 20px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, var(--gold), var(--maroon), var(--gold));"></div>
+            
+            <div class="verify-badge" style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: rgba(63, 168, 115, 0.15); border: 1px solid var(--success); color: var(--success); font-size: 28px; margin-bottom: 20px;">✓</div>
+            
+            <h1 style="font-size: 26px; margin-bottom: 6px; font-family: var(--font-display);">Ticket Verified Successfully</h1>
+            <p class="text-muted" style="font-size: 13.5px; margin-bottom: 24px; color: var(--slate);">Valid entry ticket for the event below</p>
+            
+            <!-- Divider -->
+            <div style="height: 1px; background: var(--border-soft); margin: 20px 0;"></div>
+            
+            <!-- Event details -->
+            <div style="text-align: left; margin-bottom: 24px;">
+                <span class="status-badge status-badge--approved" style="margin-bottom: 12px; display: inline-block;">Event Details</span>
+                <h2 style="font-size: 20px; font-family: var(--font-body); font-weight: 700; color: var(--gold-bright); margin-top: 4px; margin-bottom: 12px;">{{ event.title }}</h2>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px; font-size: 14px; color: var(--cream-dim);">
+                    <div><strong>Institution:</strong> <span style="color: var(--cream);">{{ event.institution }}</span></div>
+                    <div><strong>Category:</strong> <span style="color: var(--cream);">{{ event.category }}</span></div>
+                    <div><strong>Date & Time:</strong> <span style="color: var(--cream);">{{ event.date }}</span></div>
+                    <div><strong>Venue:</strong> <span style="color: var(--cream);">{{ event.venue }}</span></div>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div style="height: 1px; background: var(--border-soft); margin: 20px 0;"></div>
+            
+            <!-- Attendee details -->
+            <div style="text-align: left; margin-bottom: 24px;">
+                <span class="status-badge status-badge--pending" style="margin-bottom: 12px; display: inline-block;">Attendee Information</span>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; font-size: 14px; color: var(--cream-dim); margin-top: 8px;">
+                    <div><strong>Attendee Name:</strong> <span style="color: var(--white);">{{ registration.attendee_name }}</span></div>
+                    <div><strong>Student / Attendee ID:</strong> <span style="color: var(--white);">{{ registration.attendee_id }}</span></div>
+                    <div><strong>Affiliation:</strong> <span style="color: var(--white);">{{ registration.affiliation }}</span></div>
+                    <div><strong>Email:</strong> <span style="color: var(--white);">{{ registration.email }}</span></div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div style="height: 1px; background: var(--border-soft); margin: 20px 0;"></div>
+            
+            <!-- Transaction details -->
+            <div style="text-align: left; font-size: 12.5px; color: var(--slate); line-height: 1.6;">
+                <div><strong>Transaction Hash:</strong> <span style="font-family: monospace; color: var(--rosegold);">{{ registration.transaction_hash }}</span></div>
+                <div style="margin-top: 4px;"><strong>Registered At:</strong> <span style="color: var(--cream-dim);">{{ registration.registered_at|date:"d M Y, H:i" }}</span></div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

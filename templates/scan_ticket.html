@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Scan QR Ticket — UniEvents{% endblock %}
+{% block description %}Scan event entry passes and verification QR codes using your device camera.{% endblock %}
+{% block extra_head %}
+  <script src="https://unpkg.com/html5-qrcode"></script>
+{% endblock %}
+{% block content %}
+    <section class="page-shell" style="max-width: 600px; margin: 40px auto; padding: 0 16px; text-align: center;">
+        <div class="verify-card" style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r-lg); padding: var(--sp-6); box-shadow: var(--shadow-lg); position: relative; overflow: hidden; margin-top: 20px;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, var(--gold), var(--maroon), var(--gold));"></div>
+            
+            <div style="font-size: 38px; margin-bottom: 12px;">📷</div>
+            <h1 style="font-size: 26px; margin-bottom: 6px; font-family: var(--font-display);">Entry Pass Scanner</h1>
+            <p class="text-muted" style="font-size: 13.5px; margin-bottom: 24px; color: var(--slate);">Position the ticket QR code within the frame to verify entry</p>
+            
+            <!-- Camera selection / status -->
+            <div id="camera-selection-container" style="margin-bottom: 16px; display: none;">
+                <label class="field-label" style="text-align: center; margin-bottom: 6px;">Select Camera</label>
+                <select id="camera-select" class="field-select" style="max-width: 320px; margin: 0 auto;"></select>
+            </div>
+
+            <!-- Scanner Box -->
+            <div style="position: relative; width: 320px; height: 320px; margin: 0 auto 24px; border-radius: var(--r-md); overflow: hidden; background: var(--surface-sunken); border: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: center;">
+                <div id="reader" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                
+                <!-- Target Frame Overlay -->
+                <div id="scanner-overlay" style="position: absolute; width: 200px; height: 200px; border: 2px dashed var(--gold); border-radius: var(--r-sm); pointer-events: none; z-index: 10; display: none; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--gold); animation: scanner-laser 2s infinite linear;"></div>
+                </div>
+
+                <div id="scanner-placeholder" style="color: var(--slate); font-size: 14px; text-align: center; padding: 20px; z-index: 5;">
+                    <p>Camera is currently inactive</p>
+                    <p style="font-size: 12px; margin-top: 6px; opacity: 0.7;">Click Start Scanning below to begin</p>
+                </div>
+            </div>
+
+            <!-- Scanner controls -->
+            <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                <button id="toggle-scan-btn" class="btn btn--gold" style="width: 100%; max-width: 320px;" type="button">Start Scanning</button>
+                <div id="scan-status" style="font-size: 12.5px; color: var(--slate); min-height: 18px;">Ready to scan</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Laser animation style -->
+    <style>
+        @keyframes scanner-laser {
+            0% { top: 0%; opacity: 0.3; }
+            50% { top: 100%; opacity: 1; }
+            100% { top: 0%; opacity: 0.3; }
+        }
+    </style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Initialize header
+        renderHeader("scan-ticket");
+
+        const toggleBtn = document.getElementById("toggle-scan-btn");
+        const cameraSelect = document.getElementById("camera-select");
+        const cameraContainer = document.getElementById("camera-selection-container");
+        const scannerOverlay = document.getElementById("scanner-overlay");
+        const scannerPlaceholder = document.getElementById("scanner-placeholder");
+        const statusText = document.getElementById("scan-status");
+
+        let html5QrCode = null;
+        let isScanning = false;
+        let devices = [];
+
+        // Check if browser supports cameras
+        Html5Qrcode.getCameras().then(cameraDevices => {
+            devices = cameraDevices;
+            if (devices && devices.length > 0) {
+                cameraContainer.style.display = "block";
+                cameraSelect.innerHTML = "";
+                devices.forEach((device, index) => {
+                    const opt = document.createElement("option");
+                    opt.value = device.id;
+                    opt.textContent = device.label || `Camera ${index + 1}`;
+                    cameraSelect.appendChild(opt);
+                });
+                
+                // Default select rear camera if present
+                const environmentCamera = devices.find(device => device.label.toLowerCase().includes("back") || device.label.toLowerCase().includes("rear") || device.label.toLowerCase().includes("environment"));
+                if (environmentCamera) {
+                    cameraSelect.value = environmentCamera.id;
+                }
+            } else {
+                statusText.textContent = "No camera devices found.";
+                toggleBtn.disabled = true;
+            }
+        }).catch(err => {
+            console.error("Error getting cameras: ", err);
+            statusText.textContent = "Unable to access camera list.";
+        });
+
+        async function startScanning() {
+            try {
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+                
+                const selectedCameraId = cameraSelect.value || { facingMode: "environment" };
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 220, height: 220 }
+                };
+
+                scannerPlaceholder.style.display = "none";
+                scannerOverlay.style.display = "block";
+                statusText.textContent = "Camera starting...";
+                toggleBtn.disabled = true;
+
+                await html5QrCode.start(
+                    selectedCameraId,
+                    config,
+                    (decodedText, decodedResult) => {
+                        // QR detected!
+                        statusText.textContent = "Pass detected! Verifying...";
+                        statusText.style.color = "var(--success)";
+                        
+                        // Stop scanner and redirect
+                        html5QrCode.stop().then(() => {
+                            isScanning = false;
+                            toggleBtn.textContent = "Start Scanning";
+                            toggleBtn.disabled = false;
+                            scannerOverlay.style.display = "none";
+                            scannerPlaceholder.style.display = "block";
+
+                            if (decodedText.includes("/verify-ticket/")) {
+                                window.location.href = decodedText;
+                            } else if (decodedText.startsWith("TXN-")) {
+                                window.location.href = "/verify-ticket/" + decodedText + "/";
+                            } else {
+                                toast("Invalid ticket QR code detected.", "error");
+                                statusText.textContent = "Invalid code: " + decodedText;
+                                statusText.style.color = "var(--error)";
+                            }
+                        }).catch(err => {
+                            console.error("Error stopping scanner: ", err);
+                            // Fallback redirect if stop fails
+                            if (decodedText.includes("/verify-ticket/")) {
+                                window.location.href = decodedText;
+                            } else if (decodedText.startsWith("TXN-")) {
+                                window.location.href = "/verify-ticket/" + decodedText + "/";
+                            }
+                        });
+                    },
+                    (errorMessage) => {
+                        // Scanning / parsing log (verbose, usually ignore)
+                    }
+                );
+
+                isScanning = true;
+                toggleBtn.textContent = "Stop Scanning";
+                toggleBtn.disabled = false;
+                toggleBtn.classList.remove("btn--gold");
+                toggleBtn.classList.add("btn--outline");
+                statusText.textContent = "Scanning active. Position QR code inside frame.";
+                statusText.style.color = "var(--gold-bright)";
+            } catch (err) {
+                console.error("Error starting camera: ", err);
+                statusText.textContent = "Failed to start camera. Please verify permissions.";
+                statusText.style.color = "var(--error)";
+                toggleBtn.disabled = false;
+                scannerOverlay.style.display = "none";
+                scannerPlaceholder.style.display = "block";
+            }
+        }
+
+        async function stopScanning() {
+            if (!html5QrCode || !isScanning) return;
+            
+            toggleBtn.disabled = true;
+            statusText.textContent = "Stopping camera...";
+            
+            try {
+                await html5QrCode.stop();
+                isScanning = false;
+                toggleBtn.textContent = "Start Scanning";
+                toggleBtn.disabled = false;
+                toggleBtn.classList.remove("btn--outline");
+                toggleBtn.classList.add("btn--gold");
+                scannerOverlay.style.display = "none";
+                scannerPlaceholder.style.display = "block";
+                statusText.textContent = "Scanner stopped.";
+                statusText.style.color = "var(--slate)";
+            } catch (err) {
+                console.error("Error stopping camera: ", err);
+                toggleBtn.disabled = false;
+            }
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            if (isScanning) {
+                stopScanning();
+            } else {
+                startScanning();
+            }
+        });
+    });
+</script>
+{% endblock %}

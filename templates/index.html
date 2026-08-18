@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}UniEvents — The Heartbeat of Campus Experiences{% endblock %}
+{% block content %}
+    <div class="page-shell" id="hero-slot"></div>
+    <div class="page-shell" id="filter-slot"></div>
+    <div class="page-shell" id="feed-slot"></div>
+    <div class="page-shell" id="why-slot"></div>
+{% endblock %}
+{% block extra_scripts %}
+  <script src="{% static 'js/events.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main_attrs %} id="conduct-main"{% endblock %}
+{% block title %}Conduct an Event — UniEvents{% endblock %}
+{% block description %}Submit an event proposal, track institutional review, and self-publish once approved.{% endblock %}
+{% block content %}
+    <section class="page-shell">
+      <div class="hero__eyebrow">Student-Led Event Lifecycle</div>
+      <h1 style="font-size:30px; margin-top:10px;">Conduct Your Own Event</h1>
+      <p class="text-muted mt-32" style="max-width:560px;">
+        Propose an event, wait for your institution's review, and — once approved — publish it straight to the
+        public directory using your approval token.
+      </p>
+      <div class="mt-32" id="stepper-slot"></div>
+      <div id="form-slot"></div>
+    </section>
+
+    <section class="page-shell" id="my-proposals"></section>
+{% endblock %}
+{% block extra_scripts %}
+  <script src="{% static 'js/conduct.js' %}"></script>
+{% endblock %}

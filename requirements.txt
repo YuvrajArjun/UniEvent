@@ -1,0 +1,6 @@
+Django==5.2.17
+djangorestframework==3.18.0
+django-cors-headers==4.9.0
+PyMySQL==1.2.0
+pillow==12.3.0
+python-dotenv==1.2.2

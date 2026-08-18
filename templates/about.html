@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}About — UniEvents{% endblock %}
+{% block description %}Why UniEvents exists, how it's built, and the team behind the full-stack build.{% endblock %}
+{% block content %}
+    <section class="page-shell about-hero reveal">
+      <img src="{% static 'assets/unievents-full.png' %}" alt="UniEvents" style="height:180px; margin-bottom:22px;" />
+      <div class="hero__eyebrow">Product Vision</div>
+      <h1 style="font-size:34px; margin-top:10px;">One directory instead of a dozen group chats.</h1>
+      <p class="text-muted mt-32">
+        UniEvents exists because campus events currently live scattered across posters, WhatsApp forwards, and
+        departmental notice boards. It brings discovery, registration, and the paperwork of running a
+        student-led event into a single, unified flow — so a student proposing a hackathon and an administrator
+        reviewing it are looking at the same source of truth, in real time.
+      </p>
+      <p class="text-muted mt-32">
+        This build is a complete full-stack implementation: a Django + MySQL backend now powers every proposal,
+        approval token, and registration receipt you generate here — nothing shown on screen is mock data.
+      </p>
+      <p class="hero__tagline" style="margin-top:26px;">The Heartbeat of Campus Experiences.</p>
+    </section>
+
+    <section class="page-shell">
+      <div class="section-head">
+        <h2>What We Value</h2>
+        <span class="section-head__sub">Design principles</span>
+      </div>
+      <div class="value-grid" id="value-grid"></div>
+    </section>
+
+    <section class="page-shell">
+      <div class="section-head">
+        <h2>Build Roadmap</h2>
+        <span class="section-head__sub">V1 → V2</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <section class="page-shell">
+      <div class="section-head">
+        <h2>Engineering Showcase</h2>
+        <span class="section-head__sub">Product development team</span>
+      </div>
+      <div class="creator-grid" id="creator-grid"></div>
+    </section>
+{% endblock %}
+{% block extra_scripts %}
+  <script>
+    const TEAM = [
+      { name: "Ananya Kulkarni", role: "Product & Frontend Architecture", stack: "HTML5 · CSS3 · JS (ES6)", git: "#" },
+      { name: "Rohan Iyer", role: "Backend & Data Modeling", stack: "Python · Django · MySQL", git: "#" },
+      { name: "Sneha Bhatt", role: "Platform & DevOps", stack: "Django REST Framework · Docker", git: "#" },
+    ];
+
+    const VALUES = [
+      { glyph: "🎯", title: "One Source of Truth", desc: "A proposal, its token, and its public listing are the same database record — never three unsynced copies." },
+      { glyph: "⚡", title: "Fast to Trust", desc: "Approvals generate a verifiable token instantly, so a student can publish the moment they're cleared." },
+      { glyph: "🪪", title: "Role-Aware by Design", desc: "Students and institutions see distinct, purpose-built surfaces instead of one bloated dashboard." },
+      { glyph: "🧱", title: "Real Persistence", desc: "Every screen is backed by a Django REST API and MySQL — refresh, log out, log back in, nothing is lost." },
+    ];
+
+    const TIMELINE = [
+      { phase: "Shipped — V1", title: "Interactive Frontend Prototype", desc: "Full proposal → token → publish → register → receipt loop, running entirely on localStorage." },
+      { phase: "Shipped — V2", title: "Django + MySQL Full-Stack Rebuild", desc: "Real persistence, authentication, and business logic now live server-side behind a REST API." },
+      { phase: "Later — V3", title: "Notifications & Analytics", desc: "Email/SMS reminders, waitlists, and an institution-facing attendance analytics view." },
+    ];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await renderHeader("about");
+      initScrollReveal();
+
+      const valueGrid = qs("#value-grid");
+      VALUES.forEach((v) => {
+        valueGrid.appendChild(
+          el("div", { class: "value-card reveal" },
+            el("div", { class: "value-card__glyph" }, v.glyph),
+            el("div", { class: "value-card__title" }, v.title),
+            el("div", { class: "value-card__desc" }, v.desc)
+          )
+        );
+      });
+
+      const timeline = qs("#timeline");
+      TIMELINE.forEach((t) => {
+        timeline.appendChild(
+          el("div", { class: "timeline__item reveal" },
+            el("div", { class: "timeline__phase" }, t.phase),
+            el("div", { class: "timeline__title" }, t.title),
+            el("div", { class: "timeline__desc" }, t.desc)
+          )
+        );
+      });
+
+      const grid = qs("#creator-grid");
+      TEAM.forEach((member) => {
+        const initials = member.name.split(" ").map((p) => p[0]).join("");
+        grid.appendChild(
+          el("div", { class: "creator-card reveal" },
+            el("div", { class: "creator-card__avatar" }, initials),
+            el("div", { class: "creator-card__name" }, member.name),
+            el("div", { class: "creator-card__role" }, member.role),
+            el("div", { class: "creator-card__stack" }, member.stack),
+            el("div", { class: "creator-card__links" }, el("a", { href: member.git }, "GitHub ↗"))
+          )
+        );
+      });
+      initScrollReveal();
+    });
+  </script>
+{% endblock %}

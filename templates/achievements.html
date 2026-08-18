@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main_attrs %} id="locker-main"{% endblock %}
+{% block title %}Achievements Locker — UniEvents{% endblock %}
+{% block description %}Your personal, private archive of certificates and campus achievements.{% endblock %}
+{% block content %}
+    <section class="page-shell">
+      <div class="hero__eyebrow">Personal Achievements Portfolio</div>
+      <h1 style="font-size:30px; margin-top:10px;">Your Achievements Locker</h1>
+      <p class="text-muted mt-32" style="max-width:560px;">
+        A private archive of certificates, trophies, and recognitions — visible only to you.
+      </p>
+      <div class="tabbar mt-32">
+        <button class="tabbar__btn tabbar__btn--active" data-tab="locker" type="button">Achievements Locker</button>
+        <button class="tabbar__btn" data-tab="tickets" type="button">My Tickets & Passes</button>
+      </div>
+
+      <div class="tab-panel tab-panel--active" id="panel-locker">
+        <div class="locker-stats" id="locker-stats"></div>
+        <div class="mt-32" id="dropzone-slot"></div>
+        <div class="section-head">
+          <h2>Saved Achievements</h2>
+          <span class="section-head__sub">0 saved</span>
+        </div>
+        <div class="locker-grid" id="locker-grid"></div>
+      </div>
+
+      <div class="tab-panel" id="panel-tickets">
+        <div class="section-head">
+          <h2>Your Registered Events</h2>
+          <span class="section-head__sub" id="tickets-count">0 tickets</span>
+        </div>
+        <div class="locker-grid" id="tickets-grid"></div>
+      </div>
+    </section>
+{% endblock %}
+{% block extra_scripts %}
+  <script src="{% static 'js/achievements.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main_attrs %} id="dashboard-main"{% endblock %}
+{% block title %}Administration Hub — UniEvents{% endblock %}
+{% block description %}Review student proposals, issue approval tokens, publish listings, and manage your institution's
+active event inventory.{% endblock %}
+{% block content %}
+<section class="page-shell">
+  <div class="hero__eyebrow">Privileged Institute Management</div>
+  <h1 style="font-size:30px; margin-top:10px;">Administration Hub</h1>
+  <p class="text-muted mt-32" style="max-width:600px;">
+    Review incoming proposals, issue tokens, publish approved events, and manage everything currently live
+    under your institution's name.
+  </p>
+
+  <div class="stat-cards mt-32" id="stat-cards"></div>
+
+  <div class="tabbar mt-32">
+    <button class="tabbar__btn tabbar__btn--active" data-tab="applications" type="button">Applications</button>
+    <button class="tabbar__btn" data-tab="registrations" type="button">Student Registrations</button>
+    <button class="tabbar__btn" data-tab="listing" type="button">Event Listing Portal</button>
+    <button class="tabbar__btn" data-tab="inventory" type="button">Active Inventory</button>
+  </div>
+
+  <div class="tab-panel tab-panel--active" id="panel-applications">
+    <div class="flex-between" style="margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <h2 style="font-size:19px;">Applications Management Center</h2>
+      <div id="queue-search-slot"></div>
+    </div>
+    <div class="queue-grid" id="queue-grid"></div>
+  </div>
+
+  <div class="tab-panel" id="panel-registrations">
+    <div class="flex-between" style="margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <h2 style="font-size:19px;">Student Registrations Management</h2>
+      <div id="reg-filter-slot"></div>
+    </div>
+    <div id="registrations-list"></div>
+  </div>
+
+  <div class="tab-panel" id="panel-listing">
+    <h2 style="font-size:19px; margin-bottom:16px;">Event Listing Portal</h2>
+    <div id="listing-portal"></div>
+  </div>
+
+  <div class="tab-panel" id="panel-inventory">
+    <h2 style="font-size:19px; margin-bottom:16px;">Active Inventory Overview</h2>
+    <div id="inventory-list"></div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
