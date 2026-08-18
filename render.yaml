@@ -8,7 +8,6 @@ services:
   - type: web
     name: unievents
     runtime: python
-    runtimeVersion: 3.11.5
     plan: free
     region: oregon
     buildCommand: >
