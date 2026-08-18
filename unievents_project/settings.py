@@ -11,11 +11,9 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
-import pymysql
+import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
-
-pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,9 +28,9 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-jkzqjrt2+uf9xnop1_zx=%eg&9yp!srlt3ycc2d+rgt=f&x08n')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -85,30 +83,19 @@ WSGI_APPLICATION = 'unievents_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-# Defaults to SQLite for easy local setup. Switch to MySQL (e.g. running via Docker)
-# by setting USE_SQLITE=False in your .env file.
+# Uses PostgreSQL on Render, SQLite for local development
 
-USE_SQLITE = os.environ.get('USE_SQLITE', 'True').lower() == 'true'
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if USE_SQLITE:
+if DATABASE_URL:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
     }
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.environ.get('DB_NAME', 'unievents'),
-            'USER': os.environ.get('DB_USER', 'unievents'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'unievents_pw'),
-            'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
-            'PORT': os.environ.get('DB_PORT', '3307'),
-            'OPTIONS': {
-                'charset': 'utf8mb4',
-            },
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 
@@ -170,6 +157,9 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# WhiteNoise for static file serving
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
